@@ -230,11 +230,9 @@ based on the mode configured.
             - name: audit
               mountPath: {{ .Values.server.auditStorage.mountPath }}
   {{ end }}
-  {{ if or (eq .mode "standalone") (and (eq .mode "ha") (eq (.Values.server.ha.raft.enabled | toString) "true"))  }}
-    {{ if eq (.Values.server.dataStorage.enabled | toString) "true" }}
+  {{ if eq (.Values.server.dataStorage.enabled | toString) "true" }}
             - name: data
               mountPath: {{ .Values.server.dataStorage.mountPath }}
-    {{ end }}
   {{ end }}
   {{ if and (ne .mode "dev") (or (.Values.server.standalone.config)  (.Values.server.ha.config)) }}
             - name: config
@@ -263,7 +261,7 @@ storage might be desired by the user.
 {{- define "vault.volumeclaims" -}}
   {{- if and (ne .mode "dev") (or .Values.server.dataStorage.enabled .Values.server.auditStorage.enabled) }}
   volumeClaimTemplates:
-      {{- if and (eq (.Values.server.dataStorage.enabled | toString) "true") (or (eq .mode "standalone") (eq (.Values.server.ha.raft.enabled | toString ) "true" )) }}
+      {{- if eq (.Values.server.dataStorage.enabled | toString) "true" }}
     - metadata:
         name: data
         {{- include "vault.dataVolumeClaim.annotations" . | nindent 6 }}
